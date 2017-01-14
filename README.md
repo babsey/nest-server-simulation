@@ -1,5 +1,5 @@
-# nest-server
-A flask server for NEST
+# nest-server-simulation
+A flask server for NEST simulation
 
 
 ### To install
@@ -9,13 +9,19 @@ Install Flask with sudo
 sudo apt-get install python-flask
 ```
 
-## To start
+Clone nest-server-simulation from github
+```
+git clone https://github.com/babsey/nest-server-simulation.git
+```
 
-Start server with flask in nest-server folder
+### To start
+
+Start server with flask in nest-server-simulation folder on localhost (127.0.0.1)
 ```
-python routers.py
+python main.py
 ```
-or with custom IP address
+
+or running on own or custom host
 ```
-python routers.py 127.0.0.1
+python main.py 0.0.0.0
 ```
