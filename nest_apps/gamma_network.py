@@ -3,7 +3,7 @@ import numpy as np
 import nest
 import lib.lcrn_network as lcrn
 
-def run(data):
+def simulate(data):
     np.random.seed(int(data['kernel'].get('grng_seed', 0)))
 
     nest.ResetKernel()

@@ -2,7 +2,9 @@
 import numpy as np
 import nest
 
-def run(data):
+import lib.paramify as paramify
+
+def simulate(data):
     nest.ResetKernel()
 
     np.random.seed(int(data['kernel'].get('grng_seed', 0)))
@@ -14,8 +16,7 @@ def run(data):
 
     outputs = []
     for idx, node in enumerate(data['nodes']):
-        params = node['params']
-        params = dict(zip(params.keys(), map(float, params.values())))
+        params = paramify.simulate(node)
         if node['model'] == 'multimeter':
             params.update({'record_from': nest.GetStatus(data['nodes'][0]['ids'],'recordables')[0]})
         data['nodes'][idx]['ids'] = nest.Create(node['model'], int(node.get('n',1)), params=params)
@@ -44,10 +45,7 @@ def resume(data):
 
     outputs = []
     for idx, node in enumerate(data['nodes']):
-        params = node['params']
-        params = dict(zip(params.keys(), map(float, params.values())))
-        if 'V_m' in params: del params['V_m']
-        nest.SetStatus(node['ids'], params=params)
+        nest.SetStatus(node['ids'], params=paramify.resume(node))
         if node['type'] == 'output':
             outputs.append((idx, data['nodes'][idx]['ids']))
 

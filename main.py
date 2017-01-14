@@ -11,39 +11,40 @@ app = Flask(__name__)
 def index():
     return 'Hello World!'
 
-@app.route('/check/versions/', methods=['GET'])
-def check_versions():
+@app.route('/versions/', methods=['GET'])
+def ersions():
     req = {}
     try:
         import nest
-        req['nest'] = nest.version()
+        nest = nest.version()
     except:
         pass
+        nest = 'failed'
 
-    return jsonify(req=req)
+    return jsonify(nest=nest)
 
 
 # --------------------------
 # NEST applications
 # --------------------------
 
-import nest_apps.simple_network as network
+import nest_apps.simple_network as simple
 @app.route('/network/simple/simulate/', methods=['POST'])
 def simple_network_simulate():
     data = request.get_json()
-    return jsonify(network.run(data))
+    return jsonify(simple.simulate(data))
 
 @app.route('/network/simple/resume/', methods=['POST'])
 def simple_network_resume():
     data = request.get_json()
-    return jsonify(network.resume(data))
+    return jsonify(simple.resume(data))
 
 
 import nest_apps.gamma_network as gamma
 @app.route('/network/gamma/simulate/', methods=['POST'])
 def gamma_network_simulate():
     data = request.get_json()
-    return jsonify(gamma.run(data))
+    return jsonify(gamma.simulate(data))
 
 @app.route('/network/gamma/resume/', methods=['POST'])
 def gamma_network_resume():
