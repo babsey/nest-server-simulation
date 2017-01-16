@@ -2,6 +2,7 @@
 A flask server for NEST simulation
 
 
+<<<<<<< HEAD
 ### To install (Ubuntu)
 
 To install this application you'll need [NEST](http://www.nest-simulator.org/) and [Flask](http://flask.pocoo.org) installed on your computer.
@@ -44,6 +45,9 @@ export PYTHONPATH=$HOME/opt/nest/lib/pyton2.7/site-packages:$PYTHONPATH
 ```
 
 ### To install nest-server-simulation
+=======
+## To install
+>>>>>>> 87f6bbecff054ca5a9d13c62b5a14fe812eb1d63
 
 Install Flask with sudo
 ```
@@ -55,7 +59,7 @@ Clone nest-server-simulation from github
 git clone https://github.com/babsey/nest-server-simulation.git
 ```
 
-### To start
+## To start
 
 Start server with flask in nest-server-simulation folder on localhost (127.0.0.1)
 ```
@@ -66,3 +70,10 @@ or running on own or custom host
 ```
 python main.py 0.0.0.0
 ```
+
+## FAQ
+
+#### Stop the process is failed. How can I stop the process?
+
+Unfortunately, I did not found the solution for this issue.
+You can close the terminal or tab to stop the process?
