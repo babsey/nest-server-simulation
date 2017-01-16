@@ -26,7 +26,7 @@ def simulate():
     nest.Connect(input,pop)
     nest.Connect(mm,pop)
 
-    nest.Simulate(data['simtime'])
+    nest.Simulate(data['sim_time'])
     time = nest.GetKernelStatus('time')
 
     events = nest.GetStatus(mm,'events')[0]

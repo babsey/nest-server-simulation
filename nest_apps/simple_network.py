@@ -30,7 +30,7 @@ def simulate(data):
         target = data['nodes'][link['target']]['ids']
         nest.Connect(source, target, conn_spec=link.get('conn_spec','all_to_all'), syn_spec=syn_spec)
 
-    nest.Simulate(float(data['simtime']))
+    nest.Simulate(float(data['sim_time']))
     data['kernel']['time'] = nest.GetKernelStatus('time')
 
     for idx, output in outputs:
@@ -56,7 +56,7 @@ def resume(data):
     #     target = data['nodes'][link['target']]['ids']
     #     nest.SetStatus(nest.GetConnections(source,target))
 
-    nest.Simulate(float(data['simtime']))
+    nest.Simulate(float(data['sim_time']))
     data['kernel']['time'] = nest.GetKernelStatus('time')
 
     for idx, output in outputs:

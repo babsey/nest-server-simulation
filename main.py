@@ -11,7 +11,7 @@ app = Flask(__name__)
 def index():
     return 'Hello World!'
 
-@app.route('/versions/', methods=['GET'])
+@app.route('/versions', methods=['GET'])
 def ersions():
     req = {}
     try:
@@ -29,24 +29,24 @@ def ersions():
 # --------------------------
 
 import nest_apps.simple_network as simple
-@app.route('/network/simple/simulate/', methods=['POST'])
+@app.route('/network/simple/simulate', methods=['POST'])
 def simple_network_simulate():
     data = request.get_json()
     return jsonify(simple.simulate(data))
 
-@app.route('/network/simple/resume/', methods=['POST'])
+@app.route('/network/simple/resume', methods=['POST'])
 def simple_network_resume():
     data = request.get_json()
     return jsonify(simple.resume(data))
 
 
 import nest_apps.gamma_network as gamma
-@app.route('/network/gamma/simulate/', methods=['POST'])
+@app.route('/network/gamma/simulate', methods=['POST'])
 def gamma_network_simulate():
     data = request.get_json()
     return jsonify(gamma.simulate(data))
 
-@app.route('/network/gamma/resume/', methods=['POST'])
+@app.route('/network/gamma/resume', methods=['POST'])
 def gamma_network_resume():
     data = request.get_json()
     return jsonify(gamma.resume(data))

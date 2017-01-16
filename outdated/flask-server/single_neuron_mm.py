@@ -21,7 +21,7 @@ def simulate():
     nest.Connect(input,neuron)
     nest.Connect(mm,neuron)
 
-    nest.Simulate(data['simtime'])
+    nest.Simulate(data['sim_time'])
     time = nest.GetKernelStatus('time')
 
     events = nest.GetStatus(mm,'events')[0]

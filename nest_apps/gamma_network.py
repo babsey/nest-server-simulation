@@ -41,7 +41,7 @@ def simulate(data):
     nest.Connect(input,neuron)
     nest.Connect(neuron,sd)
 
-    nest.Simulate(data['simtime'])
+    nest.Simulate(data['sim_time'])
     data['kernel']['time'] = nest.GetKernelStatus('time')
 
     events = nest.GetStatus(sd,'events')[0]
@@ -56,7 +56,7 @@ def resume(data):
     nodes[1]['params'] = dict(zip(nodes[1]['params'].keys(), map(float, nodes[1]['params'].values())))
     nest.SetStatus(nodes[1]['ids'], nodes[1]['params'])
 
-    nest.Simulate(data['simtime'])
+    nest.Simulate(data['sim_time'])
     data['kernel']['time'] = nest.GetKernelStatus('time')
 
     events = nest.GetStatus(data['nodes'][2]['ids'],'events')[0]

@@ -43,7 +43,7 @@ def simulate():
         conn_spec={'rule': 'fixed_indegree', 'indegree': int(p*npop), 'autapses': False, 'multapses': True},
         syn_spec={'weight':-40.})
 
-    nest.Simulate(data['simtime'])
+    nest.Simulate(data['sim_time'])
     time = nest.GetKernelStatus('time')
 
     events = nest.GetStatus(sd,'events')[0]
