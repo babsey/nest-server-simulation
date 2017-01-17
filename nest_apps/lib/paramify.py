@@ -16,5 +16,8 @@ def resume(node):
         param_defaults = nest.GetDefaults(node['model'])
         recordables = param_defaults['recordables']
         for recordable in recordables:
-            if recordable.name in params: del params[recordable.name]
+            if recordable.name in params:
+                del params[recordable.name]
+    if ((node['model'] == 'multimeter') and ('record_from' in params)):
+        del params['record_from']
     return params

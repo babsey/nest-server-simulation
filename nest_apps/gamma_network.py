@@ -27,9 +27,7 @@ def simulate(data):
 
     input = nest.Create(nodes[1]['model'], params=nodes[1]['params'])
     data['nodes'][1]['ids'] = input
-    sd = nest.Create('spike_detector', params={
-        'start': 100.,
-    })
+    sd = nest.Create('spike_detector')
     data['nodes'][2]['ids'] = sd
 
     outdegree = data['links'][1]['conn_spec']['outdegree']

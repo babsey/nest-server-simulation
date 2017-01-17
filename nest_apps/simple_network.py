@@ -5,6 +5,7 @@ import nest
 import lib.paramify as paramify
 
 def simulate(data):
+    # print data
     nest.ResetKernel()
 
     np.random.seed(int(data['kernel'].get('grng_seed', 0)))
@@ -16,9 +17,14 @@ def simulate(data):
 
     outputs = []
     for idx, node in enumerate(data['nodes']):
-        params = paramify.simulate(node)
         if node['model'] == 'multimeter':
-            params.update({'record_from': nest.GetStatus(data['nodes'][0]['ids'],'recordables')[0]})
+            links = filter(lambda link: link['source'] == idx, data['links'])
+            recordables = []
+            for link in links:
+                recorded_neuron = data['nodes'][link['target']]
+                recordables.extend(map(lambda rec: rec.name, nest.GetStatus(recorded_neuron['ids'],'recordables')[0]))
+            node['params'].update({'record_from': recordables})
+        params = paramify.simulate(node)
         data['nodes'][idx]['ids'] = nest.Create(node['model'], int(node.get('n',1)), params=params)
         if node['type'] == 'output':
             outputs.append((idx, data['nodes'][idx]['ids']))
@@ -42,7 +48,7 @@ def simulate(data):
 
 
 def resume(data):
-
+    # print data
     outputs = []
     for idx, node in enumerate(data['nodes']):
         nest.SetStatus(node['ids'], params=paramify.resume(node))
