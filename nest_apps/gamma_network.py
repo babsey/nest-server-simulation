@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 import numpy as np
 import nest
+
+import lib.paramify as paramify
 import lib.lcrn_network as lcrn
 
 def simulate(data):
+    print data['links']
     np.random.seed(int(data['kernel'].get('grng_seed', 0)))
 
     nest.ResetKernel()
@@ -14,32 +17,35 @@ def simulate(data):
     })
 
     nodes = data['nodes']
-    nodes[0]['params'] = dict(zip(nodes[0]['params'].keys(), map(float, nodes[0]['params'].values())))
-    nodes[1]['params'] = dict(zip(nodes[1]['params'].keys(), map(float, nodes[1]['params'].values())))
+    input = nest.Create(nodes[0]['model'], params=paramify.simulate(nodes[0]))
+    data['nodes'][0]['ids'] = input
 
-    nrow = nodes[0]['nrow']
-    ncol = nodes[0]['ncol']
+    nrow = int(nodes[1]['nrow'])
+    ncol = int(nodes[1]['ncol'])
     n = nrow*ncol
-    neuron = nest.Create(nodes[0]['model'], n, params=nodes[0]['params'])
-    data['nodes'][0]['ids'] = neuron
-    data['nodes'][0]['ncol'] = ncol
-    data['nodes'][0]['nrow'] = nrow
+    neuron = nest.Create(nodes[1]['model'], int(n), params=paramify.simulate(nodes[1]))
+    data['nodes'][1]['ids'] = neuron
 
-    input = nest.Create(nodes[1]['model'], params=nodes[1]['params'])
-    data['nodes'][1]['ids'] = input
     sd = nest.Create('spike_detector')
     data['nodes'][2]['ids'] = sd
+
+    nest.Connect(input, neuron,
+        conn_spec = data['links'][0].get('conn_spec', 'all_to_all'),
+        syn_spec = {'weight': float(data['links'][0]['syn_spec'].get('weight',1.))}
+        )
 
     outdegree = data['links'][1]['conn_spec']['outdegree']
     offset = neuron[0]
     for ii in range(n):
-        targets, delay = lcrn.lcrn_gamma_targets(ii, nrow, ncol, nrow, ncol, outdegree , 4, 3)
-        nest.Connect([neuron[ii]], (targets+offset).tolist(), 'all_to_all', {'weight': -1.})
+        targets, delay = lcrn.lcrn_gamma_targets(ii, nrow, ncol, nrow, ncol, int(outdegree), 4, 3)
+        nest.Connect([neuron[ii]], (targets+offset).tolist(),
+            conn_spec = 'all_to_all',
+            syn_spec = {'weight': float(data['links'][1]['syn_spec'].get('weight', -1.))}
+            )
 
-    nest.Connect(input,neuron)
     nest.Connect(neuron,sd)
 
-    nest.Simulate(data['sim_time'])
+    nest.Simulate(float(data['sim_time']))
     data['kernel']['time'] = nest.GetKernelStatus('time')
 
     events = nest.GetStatus(sd,'events')[0]
@@ -51,14 +57,13 @@ def simulate(data):
 def resume(data):
 
     nodes = data['nodes']
-    nodes[1]['params'] = dict(zip(nodes[1]['params'].keys(), map(float, nodes[1]['params'].values())))
-    nest.SetStatus(nodes[1]['ids'], nodes[1]['params'])
+    nest.SetStatus(nodes[0]['ids'], paramify.resume(nodes[0]))
 
-    nest.Simulate(data['sim_time'])
+    nest.Simulate(float(data['sim_time']))
     data['kernel']['time'] = nest.GetKernelStatus('time')
 
-    events = nest.GetStatus(data['nodes'][2]['ids'],'events')[0]
-    data['nodes'][2]['events'] = dict(map(lambda (x,y): (x,y.tolist()), events.items()))
-    nest.SetStatus(data['nodes'][2]['ids'], {'n_events': 0})
+    events = nest.GetStatus(nodes[2]['ids'],'events')[0]
+    nodes[2]['events'] = dict(map(lambda (x,y): (x,y.tolist()), events.items()))
+    nest.SetStatus(nodes[2]['ids'], {'n_events': 0})
 
     return data

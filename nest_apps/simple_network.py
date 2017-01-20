@@ -17,11 +17,13 @@ def simulate(data):
 
     outputs = []
     for idx, node in enumerate(data['nodes']):
+        if not 'model' in node: continue
+
         if node['model'] == 'multimeter':
-            links = filter(lambda link: link['source'] == idx, data['links'])
+            links = filter(lambda link: link['target'] == idx, data['links'])
             recordables = []
             for link in links:
-                recorded_neuron = data['nodes'][link['target']]
+                recorded_neuron = data['nodes'][link['source']]
                 recordables.extend(map(lambda rec: rec.name, nest.GetStatus(recorded_neuron['ids'],'recordables')[0]))
             node['params'].update({'record_from': recordables})
         params = paramify.simulate(node)
@@ -34,7 +36,10 @@ def simulate(data):
         syn_spec = dict(zip(syn_spec.keys(), map(float, syn_spec.values())))
         source = data['nodes'][link['source']]['ids']
         target = data['nodes'][link['target']]['ids']
-        nest.Connect(source, target, conn_spec=link.get('conn_spec','all_to_all'), syn_spec=syn_spec)
+        if data['nodes'][link['target']]['model'] in ['voltmeter','multimeter']:
+            nest.Connect(target, source, conn_spec=link.get('conn_spec','all_to_all'), syn_spec=syn_spec)
+        else:
+            nest.Connect(source, target, conn_spec=link.get('conn_spec','all_to_all'), syn_spec=syn_spec)
 
     nest.Simulate(float(data['sim_time']))
     data['kernel']['time'] = nest.GetKernelStatus('time')
