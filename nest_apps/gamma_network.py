@@ -6,7 +6,7 @@ import lib.paramify as paramify
 import lib.lcrn_network as lcrn
 
 def simulate(data):
-    print data['links']
+    # print data
     np.random.seed(int(data['kernel'].get('grng_seed', 0)))
 
     nest.ResetKernel()
