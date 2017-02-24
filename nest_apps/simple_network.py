@@ -32,10 +32,10 @@ def simulate(data):
             outputs.append((idx, data['nodes'][idx]['ids']))
 
     for link in data['links']:
-        syn_spec = link.get('syn_spec',{'weight': 1.})
-        syn_spec = dict(zip(syn_spec.keys(), map(float, syn_spec.values())))
         source = data['nodes'][link['source']]['ids']
         target = data['nodes'][link['target']]['ids']
+        syn_spec = link.get('syn_spec',{'weight': 1.})
+        syn_spec = paramify.syn(syn_spec)
         if data['nodes'][link['target']]['model'] in ['voltmeter','multimeter']:
             nest.Connect(target, source, conn_spec=link.get('conn_spec','all_to_all'), syn_spec=syn_spec)
         else:

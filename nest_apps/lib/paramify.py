@@ -1,9 +1,9 @@
 import nest
 
 def simulate(node):
-    param_defaults = nest.GetDefaults(node['model'])
     params = {}
     if len(node['params']) > 0:
+        param_defaults = nest.GetDefaults(node['model'])
         for pkey,pval in node['params'].items():
             if pkey in param_defaults:
                 params[pkey] = type(param_defaults[pkey])(pval)
@@ -21,3 +21,11 @@ def resume(node):
     if ((node['model'] == 'multimeter') and ('record_from' in params)):
         del params['record_from']
     return params
+
+def syn(syn_spec):
+    if len(syn_spec) > 0:
+        param_defaults = nest.GetDefaults(syn_spec.get('model', 'static_synapse'))
+        for pkey,pval in syn_spec.items():
+            if pkey in param_defaults:
+                syn_spec[pkey] = type(param_defaults[pkey])(pval)
+    return syn_spec
