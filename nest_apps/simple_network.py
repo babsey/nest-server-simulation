@@ -18,7 +18,7 @@ def simulate(data):
     outputs = []
     for idx, node in enumerate(data['nodes']):
         if node.get('disabled', False): continue
-        if node.get('model', False): continue
+        if not node.get('model', False): continue
         if len(node['model']) == 0: continue
 
         if node['model'] == 'multimeter':
@@ -37,8 +37,8 @@ def simulate(data):
         if link.get('disabled', False): continue
         if data['nodes'][link['source']].get('disabled', False): continue
         if data['nodes'][link['target']].get('disabled', False): continue
-        if data['nodes'][link['source']].get('ids', False): continue
-        if data['nodes'][link['target']].get('ids', False): continue
+        if not data['nodes'][link['source']].get('ids', False): continue
+        if not data['nodes'][link['target']].get('ids', False): continue
 
         source = data['nodes'][link['source']]['ids']
         target = data['nodes'][link['target']]['ids']
