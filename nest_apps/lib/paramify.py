@@ -1,3 +1,4 @@
+import numpy as np
 import nest
 
 def simulate(node):
@@ -6,7 +7,11 @@ def simulate(node):
         param_defaults = nest.GetDefaults(node['model'])
         for pkey,pval in node['params'].items():
             if pkey in param_defaults:
-                params[pkey] = type(param_defaults[pkey])(pval)
+                ptype = type(param_defaults[pkey])
+                if ptype == np.ndarray:
+                    params[pkey] = np.array(pval, dtype=param_defaults[pkey].dtype)
+                else:
+                    params[pkey] = ptype(pval)
     return params
 
 

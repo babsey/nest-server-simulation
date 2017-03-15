@@ -17,7 +17,9 @@ def simulate(data):
 
     outputs = []
     for idx, node in enumerate(data['nodes']):
-        if not 'model' in node: continue
+        if node.get('disabled', False): continue
+        if node.get('model', False): continue
+        if len(node['model']) == 0: continue
 
         if node['model'] == 'multimeter':
             links = filter(lambda link: link['target'] == idx, data['links'])
@@ -32,6 +34,12 @@ def simulate(data):
             outputs.append((idx, data['nodes'][idx]['ids']))
 
     for link in data['links']:
+        if link.get('disabled', False): continue
+        if data['nodes'][link['source']].get('disabled', False): continue
+        if data['nodes'][link['target']].get('disabled', False): continue
+        if data['nodes'][link['source']].get('ids', False): continue
+        if data['nodes'][link['target']].get('ids', False): continue
+
         source = data['nodes'][link['source']]['ids']
         target = data['nodes'][link['target']]['ids']
         syn_spec = link.get('syn_spec',{'weight': 1.})
@@ -56,6 +64,8 @@ def resume(data):
     # print data
     outputs = []
     for idx, node in enumerate(data['nodes']):
+        if not 'ids' in node: continue
+        if len(node['ids']) == 0: continue
         nest.SetStatus(node['ids'], params=paramify.resume(node))
         if node['type'] == 'output':
             outputs.append((idx, data['nodes'][idx]['ids']))
