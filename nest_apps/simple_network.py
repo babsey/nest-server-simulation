@@ -64,8 +64,8 @@ def resume(data):
     # print data
     outputs = []
     for idx, node in enumerate(data['nodes']):
-        if not 'ids' in node: continue
-        if len(node['ids']) == 0: continue
+        if node.get('disabled', False): continue
+        if len(node.get('ids', [])) == 0: continue
         nest.SetStatus(node['ids'], params=paramify.resume(node))
         if node['type'] == 'output':
             outputs.append((idx, data['nodes'][idx]['ids']))
