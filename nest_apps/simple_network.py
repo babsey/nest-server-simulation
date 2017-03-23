@@ -5,7 +5,7 @@ import nest
 import lib.paramify as paramify
 
 def simulate(data):
-    # print data
+    print data
     nest.ResetKernel()
 
     np.random.seed(int(data['kernel'].get('grng_seed', 0)))
@@ -13,6 +13,7 @@ def simulate(data):
         'local_num_threads': 4,
         'grng_seed': np.random.randint(0,1000),
         'rng_seeds': np.random.randint(0,1000,4).tolist(),
+        'resolution': float(data['kernel'].get('resolution', 1.0)),
     })
 
     outputs = []
@@ -27,6 +28,7 @@ def simulate(data):
             for link in links:
                 recorded_neuron = data['nodes'][link['source']]
                 recordables.extend(map(lambda rec: rec.name, nest.GetStatus(recorded_neuron['ids'],'recordables')[0]))
+            recordables = sorted(list(set(recordables)))
             node['params'].update({'record_from': recordables})
         params = paramify.simulate(node)
         data['nodes'][idx]['ids'] = nest.Create(node['model'], int(node.get('n',1)), params=params)
@@ -66,16 +68,22 @@ def resume(data):
     for idx, node in enumerate(data['nodes']):
         if node.get('disabled', False): continue
         if len(node.get('ids', [])) == 0: continue
-        nest.SetStatus(node['ids'], params=paramify.resume(node))
-        if node['type'] == 'output':
-            outputs.append((idx, data['nodes'][idx]['ids']))
+        if node['type'] != 'output':
+            nest.SetStatus(node['ids'], params=paramify.resume(node))
+        else:
+            outputs.append((idx, node['ids']))
 
     # for link in data['links']:
-    #     syn_spec = link.get('syn_spec',{'weight': 1.})
-    #     syn_spec = dict(zip(syn_spec.keys(), map(float, syn_spec.values())))
+    #     if link.get('disabled', False): continue
+    #     if data['nodes'][link['source']].get('disabled', False): continue
+    #     if data['nodes'][link['target']].get('disabled', False): continue
+    #     if data['nodes'][link['target']]['model'] == 'output': continue
+    #     if not data['nodes'][link['source']].get('ids', False): continue
+    #     if not data['nodes'][link['target']].get('ids', False): continue
     #     source = data['nodes'][link['source']]['ids']
     #     target = data['nodes'][link['target']]['ids']
-    #     nest.SetStatus(nest.GetConnections(source,target))
+    #     syn_spec = link.get('syn_spec',{'weight': 1.})
+    #     nest.SetStatus(nest.GetConnections(source,target),syn_spec)
 
     nest.Simulate(float(data['sim_time']))
     data['kernel']['time'] = nest.GetKernelStatus('time')
