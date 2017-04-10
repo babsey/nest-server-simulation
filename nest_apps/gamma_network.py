@@ -5,15 +5,15 @@ import nest
 import lib.paramify as paramify
 import lib.lcrn_network as lcrn
 
-def simulate(data):
+def simulate(data, local_num_threads=1):
     # print data
     np.random.seed(int(data['kernel'].get('grng_seed', 0)))
 
     nest.ResetKernel()
     nest.SetKernelStatus({
-        'local_num_threads': 4,
+        'local_num_threads': local_num_threads,
         'grng_seed': int(data['kernel'].get('grng_seed', 0)),
-        'rng_seeds': np.random.randint(0,1000,4).tolist(),
+        'rng_seeds': np.random.randint(0,1000,local_num_threads).tolist(),
     })
 
     nodes = data['nodes']
@@ -29,19 +29,15 @@ def simulate(data):
     sd = nest.Create('spike_detector')
     data['nodes'][2]['ids'] = sd
 
-    nest.Connect(input, neuron,
-        conn_spec = data['links'][0].get('conn_spec', 'all_to_all'),
-        syn_spec = {'weight': float(data['links'][0]['syn_spec'].get('weight',1.))}
-        )
+    source, target, conn_spec, syn_spec = paramify.link(data['links'][0])
+    nest.Connect(input, neuron, conn_spec = conn_spec, syn_spec = syn_spec)
 
-    outdegree = data['links'][1]['conn_spec']['outdegree']
+    source, target, conn_spec, syn_spec = paramify.link(data['links'][1])
+    outdegree = conn_spec['outdegree']
     offset = neuron[0]
     for ii in range(n):
         targets, delay = lcrn.lcrn_gamma_targets(ii, nrow, ncol, nrow, ncol, int(outdegree), 4, 3)
-        nest.Connect([neuron[ii]], (targets+offset).tolist(),
-            conn_spec = 'all_to_all',
-            syn_spec = {'weight': float(data['links'][1]['syn_spec'].get('weight', -1.))}
-            )
+        nest.Connect([neuron[ii]], (targets+offset).tolist(), conn_spec = conn_spec, syn_spec = syn_spec)
 
     nest.Connect(neuron,sd)
 
