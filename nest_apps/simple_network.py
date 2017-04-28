@@ -47,6 +47,11 @@ def simulate(data, local_num_threads=1):
         source, target, conn_spec, syn_spec = paramify.link(link)
         if nodes[link['target']]['model'] in ['voltmeter', 'multimeter']:
             source, target = target, source
+            if type(conn_spec) == dict:
+                if conn_spec['rule'] == 'fixed_indegree':
+                    conn_spec['rule'] = 'fixed_outdegree'
+                    conn_spec['outdegree'] = conn_spec['indegree']
+                    del conn_spec['indegree']
         nest.Connect(nodes[source]['ids'], nodes[target]['ids'], conn_spec=conn_spec, syn_spec=syn_spec)
 
     nest.Simulate(float(data['sim_time']))
