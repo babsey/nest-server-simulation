@@ -50,7 +50,7 @@ def simulate(data, local_num_threads=1):
 
     return data
 
-def resume(data):
+def resume(data, local_num_threads=1):
 
     nodes = data['nodes']
     nest.SetStatus(nodes[0]['ids'], paramify.resume(nodes[0]))

@@ -65,7 +65,7 @@ def simulate(data, local_num_threads=1):
     return data
 
 
-def resume(data):
+def resume(data, local_num_threads=1):
     # print data
     recorders = []
     for idx, node in enumerate(data['nodes']):
