@@ -5,7 +5,7 @@ import nest
 import lib.paramify as paramify
 
 def simulate(data, local_num_threads=1):
-    print data
+    # print data
     nest.ResetKernel()
 
     np.random.seed(int(data['kernel'].get('grng_seed', 0)))
