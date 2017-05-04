@@ -6,8 +6,9 @@ import lib.paramify as paramify
 
 def simulate(data, local_num_threads=1):
     # print data
-    nest.ResetKernel()
 
+    print 'Set kernel'
+    nest.ResetKernel()
     np.random.seed(int(data['kernel'].get('grng_seed', 0)))
     nest.SetKernelStatus({
         'local_num_threads': local_num_threads,
@@ -20,11 +21,17 @@ def simulate(data, local_num_threads=1):
     links = data['links']
 
     recorders = []
+    print 'Create nodes'
     for idx, node in enumerate(nodes):
         if node.get('disabled', False): continue
         if not node.get('model', False): continue
-        if len(node['model']) == 0: continue
+        nodes[idx]['ids'] = nest.Create(node['model'], int(node.get('n',1)))
+        if node['element_type'] == 'recorder':
+            recorders.append((idx, nodes[idx]['ids']))
 
+    print 'Set parameters for nodes'
+    for idx, node in enumerate(nodes):
+        if len(node.get('ids', [])) == 0: continue
         if node['model'] == 'multimeter':
             rec_links = filter(lambda link: link['target'] == idx, links)
             recordables = []
@@ -33,11 +40,11 @@ def simulate(data, local_num_threads=1):
                 recordables.extend(map(lambda rec: rec.name, nest.GetStatus(recorded_neuron['ids'],'recordables')[0]))
             recordables = sorted(list(set(recordables)))
             node['params'].update({'record_from': recordables})
-        params = paramify.simulate(node)
-        nodes[idx]['ids'] = nest.Create(node['model'], int(node.get('n',1)), params=params)
-        if node['element_type'] == 'recorder':
-            recorders.append((idx, nodes[idx]['ids']))
 
+        if len(node.get('params', {})) == 0: continue
+        nest.SetStatus(node['ids'], params=paramify.simulate(node))
+
+    print 'Connect nodes'
     for link in data['links']:
         if link.get('disabled', False): continue
         if nodes[link['source']].get('disabled', False): continue
@@ -54,9 +61,11 @@ def simulate(data, local_num_threads=1):
                     del conn_spec['indegree']
         nest.Connect(nodes[source]['ids'], nodes[target]['ids'], conn_spec=conn_spec, syn_spec=syn_spec)
 
+    print 'Simulate'
     nest.Simulate(float(data['sim_time']))
     data['kernel']['time'] = nest.GetKernelStatus('time')
 
+    print 'Get record data'
     for idx, recorder in recorders:
         events = nest.GetStatus(recorder,'events')[0]
         nodes[idx]['events'] = dict(map(lambda (x,y): (x,y.tolist()), events.items()))
@@ -69,7 +78,6 @@ def resume(data, local_num_threads=1):
     # print data
     recorders = []
     for idx, node in enumerate(data['nodes']):
-        if node.get('disabled', False): continue
         if len(node.get('ids', [])) == 0: continue
         if node['element_type'] != 'recorder':
             nest.SetStatus(node['ids'], params=paramify.resume(node))
