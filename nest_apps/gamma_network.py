@@ -2,8 +2,8 @@
 import numpy as np
 import nest
 
-import lib.paramify as paramify
-import lib.lcrn_network as lcrn
+from .lib import paramify
+from .lib import lcrn_network as lcrn
 
 def simulate(data, local_num_threads=1):
     # print data
@@ -45,7 +45,7 @@ def simulate(data, local_num_threads=1):
     data['kernel']['time'] = nest.GetKernelStatus('time')
 
     events = nest.GetStatus(sd,'events')[0]
-    data['nodes'][2]['events'] = dict(map(lambda (x,y): (x,y.tolist()), events.items()))
+    data['nodes'][2]['events'] = dict(map(lambda X: X[0], X[1].tolist(), events.items()))
     nest.SetStatus(sd, {'n_events': 0})
 
     return data
@@ -59,7 +59,7 @@ def resume(data, local_num_threads=1):
     data['kernel']['time'] = nest.GetKernelStatus('time')
 
     events = nest.GetStatus(nodes[2]['ids'],'events')[0]
-    nodes[2]['events'] = dict(map(lambda (x,y): (x,y.tolist()), events.items()))
+    nodes[2]['events'] = dict(map(lambda X: X[0], X[1].tolist(), events.items()))
     nest.SetStatus(nodes[2]['ids'], {'n_events': 0})
 
     return data

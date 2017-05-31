@@ -7,7 +7,7 @@ def run(simulation, data):
     local_num_threads = 4
     try:
         response = {'data': simulation(data, local_num_threads)}
-    except Exception, e:
+    except Exception as e:
         response = {'error': str(e)}
     return jsonify(response)
 
