@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import nest_apps.simple_network as simple
-import nest_apps.gamma_network as gamma
 
 from flask import Flask, request, jsonify
 app = Flask(__name__)
@@ -52,16 +51,6 @@ def simple_network_simulate():
 @app.route('/network/simple/resume', methods=['POST'])
 def simple_network_resume():
     return run(simple.resume, request.get_json())
-
-
-@app.route('/network/gamma/simulate', methods=['POST'])
-def gamma_network_simulate():
-    return run(gamma.simulate, request.get_json())
-
-
-@app.route('/network/gamma/resume', methods=['POST'])
-def gamma_network_resume():
-    return run(gamma.resume, request.get_json())
 
 
 if __name__ == '__main__':

@@ -6,9 +6,10 @@ from .lib import paramify
 
 
 def simulate(data, local_num_threads=1):
-    # print data
+    # print(data)
+    print('Simulate %s' %data.get('id', None))
 
-    print('Set kernel')
+    # print('Set kernel')
     nest.ResetKernel()
     np.random.seed(int(data['kernel'].get('grng_seed', 0)))
     nest.SetKernelStatus({
@@ -22,7 +23,7 @@ def simulate(data, local_num_threads=1):
     links = data['links']
 
     recorders = []
-    print('Create nodes')
+    # print('Create nodes')
     for idx, node in enumerate(nodes):
         if node.get('disabled', False):
             continue
@@ -32,7 +33,7 @@ def simulate(data, local_num_threads=1):
         if node['element_type'] == 'recorder':
             recorders.append((idx, nodes[idx]['ids']))
 
-    print('Set parameters for nodes')
+    # print('Set parameters for nodes')
     for idx, node in enumerate(nodes):
         if len(node.get('ids', [])) == 0:
             continue
@@ -51,7 +52,7 @@ def simulate(data, local_num_threads=1):
             continue
         nest.SetStatus(node['ids'], params=paramify.simulate(node))
 
-    print('Connect nodes')
+    # print('Connect nodes')
     for link in data['links']:
         if link.get('disabled', False):
             continue
@@ -75,11 +76,11 @@ def simulate(data, local_num_threads=1):
             nodes[source]['ids'], nodes[target]['ids'], conn_spec=conn_spec,
             syn_spec=syn_spec)
 
-    print('Simulate')
+    # print('Simulate')
     nest.Simulate(float(data['sim_time']))
     data['kernel']['time'] = nest.GetKernelStatus('time')
 
-    print('Get record data')
+    # print('Get record data')
     for idx, recorder in recorders:
         events = nest.GetStatus(recorder, 'events')[0]
         nodes[idx]['events'] = dict(
@@ -90,7 +91,9 @@ def simulate(data, local_num_threads=1):
 
 
 def resume(data, local_num_threads=1):
-    # print data
+    # print(data)
+    print('Resume %s' %data.get('id', None))
+
     recorders = []
     for idx, node in enumerate(data['nodes']):
         if len(node.get('ids', [])) == 0:
