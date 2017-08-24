@@ -11,7 +11,6 @@ app = Flask(__name__)
 def is_valid_ip(ip):
     # https://stackoverflow.com/questions/319279/how-to-validate-ip-address-in-python
     m = re.match(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", ip)
-    # m = re.match(r"^(\d{1,3}\.){3}\d{1,3}$", ip)
     return bool(m) and all(map(lambda n: 0 <= int(n) <= 255, m.groups()))
 
 # --------------------------
