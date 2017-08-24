@@ -1,61 +1,58 @@
 #!/usr/bin/env python
 
+import re
+import sys
 import nest_apps.simple_network as simple
 
 from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 
-def run(simulation, data):
-    local_num_threads = 4
-    try:
-        response = {'data': simulation(data, local_num_threads)}
-    except Exception as e:
-        response = {'error': str(e)}
-    return jsonify(response)
-
+def is_valid_ip(ip):
+    # https://stackoverflow.com/questions/319279/how-to-validate-ip-address-in-python
+    m = re.match(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", ip)
+    # m = re.match(r"^(\d{1,3}\.){3}\d{1,3}$", ip)
+    return bool(m) and all(map(lambda n: 0 <= int(n) <= 255, m.groups()))
 
 # --------------------------
-# General requests
+# General request
 # --------------------------
-
 
 @app.route('/', methods=['GET'])
 def index():
     return 'Hello World!'
 
 
-@app.route('/versions', methods=['GET'])
-def versions():
-    req = {}
+# --------------------------
+# NEST simulation request
+# --------------------------
+
+def simulate(simulation, data):
+    # print(data)
     try:
-        import nest
-        nest = nest.version()
-    except:
-        pass
-        nest = 'failed'
-
-    return jsonify(nest=nest)
-
-
-# --------------------------
-# NEST applications
-# --------------------------
-
+        response = {'data': simulation(data)}
+    except Exception as e:
+        response = {'error': str(e)}
+    return jsonify(response)
 
 @app.route('/network/simple/simulate', methods=['POST'])
 def simple_network_simulate():
-    return run(simple.simulate, request.get_json())
-
+    return simulate(simple.simulate, request.get_json())
 
 @app.route('/network/simple/resume', methods=['POST'])
 def simple_network_resume():
-    return run(simple.resume, request.get_json())
+    return simulate(simple.resume, request.get_json())
 
 
 if __name__ == '__main__':
-    import sys
+    ip = '127.0.0.1'
+    port = 5000
     if len(sys.argv) > 1:
-        app.run(sys.argv[1])
-    else:
-        app.run()
+        host = sys.argv[1]
+        if ':' in host:
+            ip, port = host.split(':')
+        else:
+            ip = host
+    # print('%s:%s' %(ip,port))
+    assert is_valid_ip(ip)
+    app.run(host=ip, port=int(port))

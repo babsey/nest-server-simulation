@@ -5,16 +5,15 @@ import nest
 from .lib import paramify
 
 
-def simulate(data, local_num_threads=1):
-    # print(data)
+def simulate(data):
     print('Simulate %s' %data.get('id', None))
 
     # print('Set kernel')
     nest.ResetKernel()
-    np.random.seed(int(data['kernel'].get('grng_seed', 0)))
+    np.random.seed(int(data.get('random_seed', 0)))
+    local_num_threads = int(data['kernel'].get('local_num_threads', 1))
     nest.SetKernelStatus({
         'local_num_threads': local_num_threads,
-        'grng_seed': np.random.randint(0, 1000),
         'rng_seeds': np.random.randint(0, 1000, local_num_threads).tolist(),
         'resolution': float(data['kernel'].get('resolution', 1.0)),
     })
@@ -90,8 +89,7 @@ def simulate(data, local_num_threads=1):
     return data
 
 
-def resume(data, local_num_threads=1):
-    # print(data)
+def resume(data):
     print('Resume %s' %data.get('id', None))
 
     recorders = []
