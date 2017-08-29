@@ -43,7 +43,7 @@ make install
 
 Make sure that NEST is in the PYTHONPATH (or add this line in .bashrc file)
 ```
-export PYTHONPATH=$HOME/opt/nest/lib/pyton2.7/site-packages:$PYTHONPATH
+export PYTHONPATH=$HOME/opt/nest/lib/python2.7/site-packages:$PYTHONPATH
 ```
 
 Delete downloaded files and build folder
