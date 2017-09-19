@@ -17,6 +17,7 @@ def is_valid_ip(ip):
 # General request
 # --------------------------
 
+
 @app.route('/', methods=['GET'])
 def index():
     return 'Hello World!'
@@ -34,9 +35,11 @@ def simulate(simulation, data):
         response = {'error': str(e)}
     return jsonify(response)
 
+
 @app.route('/network/simple/simulate', methods=['POST'])
 def simple_network_simulate():
     return simulate(simple.simulate, request.get_json())
+
 
 @app.route('/network/simple/resume', methods=['POST'])
 def simple_network_resume():

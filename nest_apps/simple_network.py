@@ -6,7 +6,7 @@ from .lib import paramify
 
 
 def simulate(data):
-    print('Simulate %s' %data.get('id', None))
+    print('Simulate %s' % data.get('id', None))
 
     # print('Set kernel')
     nest.ResetKernel()
@@ -90,7 +90,7 @@ def simulate(data):
 
 
 def resume(data):
-    print('Resume %s' %data.get('id', None))
+    print('Resume %s' % data.get('id', None))
 
     recorders = []
     for idx, node in enumerate(data['nodes']):
@@ -100,18 +100,6 @@ def resume(data):
             nest.SetStatus(node['ids'], params=paramify.resume(node))
         else:
             recorders.append((idx, node['ids']))
-
-    # for link in data['links']:
-    #     if link.get('disabled', False): continue
-    #     if data['nodes'][link['source']].get('disabled', False): continue
-    #     if data['nodes'][link['target']].get('disabled', False): continue
-    #     if data['nodes'][link['target']]['model'] == 'recorder': continue
-    #     if not data['nodes'][link['source']].get('ids', False): continue
-    #     if not data['nodes'][link['target']].get('ids', False): continue
-    #     source = data['nodes'][link['source']]['ids']
-    #     target = data['nodes'][link['target']]['ids']
-    #     syn_spec = link.get('syn_spec',{'weight': 1.})
-    #     nest.SetStatus(nest.GetConnections(source,target),syn_spec)
 
     nest.Simulate(float(data['sim_time']))
     data['kernel']['time'] = nest.GetKernelStatus('time')
