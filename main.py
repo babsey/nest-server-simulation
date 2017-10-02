@@ -21,12 +21,17 @@ def is_valid_ip(ip):
 
 @app.route('/', methods=['GET'])
 def index():
-    return {'server': 'NEST', 'version': nest.version().split(' ')[1], 'ref': 'http://www.github.com/babsey/nest-server-simulation'}
-
+    response = {
+        'server': 'NEST',
+        'version': nest.version().split(' ')[1],
+        'ref': 'http://www.github.com/babsey/nest-server-simulation'
+    }
+    return jsonify(response)
 
 # --------------------------
 # NEST simulation request
 # --------------------------
+
 
 def simulate(simulation, data):
     # print(data)
