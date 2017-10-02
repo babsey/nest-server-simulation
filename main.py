@@ -2,6 +2,7 @@
 
 import re
 import sys
+import nest
 import nest_apps.simple_network as simple
 
 from flask import Flask, request, jsonify
@@ -20,7 +21,7 @@ def is_valid_ip(ip):
 
 @app.route('/', methods=['GET'])
 def index():
-    return 'Hello World!'
+    return {'server': 'NEST', 'version': nest.version().split(' ')[1], 'ref': 'http://www.github.com/babsey/nest-server-simulation'}
 
 
 # --------------------------
