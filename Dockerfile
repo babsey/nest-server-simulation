@@ -1,5 +1,7 @@
 FROM ubuntu:16.04
 
+LABEL maintainer="Sebastian Spreizer <spreizer@web.de>"
+
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -28,4 +30,4 @@ COPY ./ /nest-server-simulation
 WORKDIR /nest-server-simulation
 
 EXPOSE 5000
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]

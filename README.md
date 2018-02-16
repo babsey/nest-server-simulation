@@ -1,27 +1,23 @@
 # nest-server-simulation
 A flask server for NEST simulation
 
-### To install (Ubuntu)
+## Requirements
 
 To install this application you'll need [NEST](http://www.nest-simulator.org/) and [Flask](http://flask.pocoo.org) installed on your computer.
 
-### To install NEST
+### Install NEST
 
-Install standard configuration before installing NEST 2.12.0
+Install standard configuration before installing NEST 2.14.0
 ```
-sudo apt-get install -y build-essential cmake libltdl7-dev libreadline6-dev libncurses5-dev libgsl0-dev python-all-dev python-nose
-```
-
-Optional packages for python:
-```
-sudo apt-get install python-numpy python-scipy python-matplotlib ipython
+sudo apt-get install -y build-essential cmake libltdl7-dev libreadline6-dev \
+libncurses5-dev libgsl0-dev python-all-dev python-numpy wget
 ```
 
 Install NEST with PyNEST in your home folder.
 Read the [installation instructions](http://www.nest-simulator.org/installation/).
 ```
-wget https://github.com/nest/nest-simulator/releases/download/v2.12.0/nest-2.12.0.tar.gz
-tar -zxf nest-2.12.0.tar.gz
+wget https://github.com/nest/nest-simulator/releases/download/v2.14.0/nest-2.14.0.tar.gz
+tar -zxf nest-2.14.0.tar.gz
 ```
 
 Go to build folder for compiling NEST
@@ -35,52 +31,64 @@ Configure NEST (in Python 2.7)
 cmake -DCMAKE_INSTALL_PREFIX:PATH=$HOME/opt/nest </path/to/NEST/src>
 ```
 
-Making and installing NEST
+Compile and install NEST (with sudo)
 ```
 make
 make install
 ```
 
-Make sure that NEST is in the PYTHONPATH (or add this line in .bashrc file)
+Load NEST commands and source
 ```
-export PYTHONPATH=$HOME/opt/nest/lib/python2.7/site-packages:$PYTHONPATH
-```
-
-Delete downloaded files and build folder
-```
-rm nest-2.12.0.tar.gz
-rm -rf nest-2.12.0 nest-build
+source /opt/nest/bin/nest_vars.sh
 ```
 
-### To install nest-server-simulation
-
-## To install
+### Install python-flask
 
 Install Flask with sudo
 ```
 sudo apt-get install python-flask
 ```
 
+## Install nest-server-simulation
+
 Clone nest-server-simulation from github
 ```
 git clone https://github.com/babsey/nest-server-simulation.git
 ```
 
-## To start
+## Start nest-server-simulation
 
-Start server with flask in nest-server-simulation folder (by default: 127.0.0.1)
+Default hostname is 127.0.0.1 and port 5000.
+Start flask server in nest-server-simulation folder
 ```
 python main.py
 ```
 
-or running on all or a custom host (default port is 5000)
+or running on all or a custom host
 ```
-python main.py 0.0.0.0
+python main.py -H 0.0.0.0
 ```
 
-or running on all or a custom host and custom port
+or running on custom port
 ```
-python main.py 0.0.0.0:8000
+python main.py -p 8000
+```
+
+## Docker
+
+Build a docker image
+```
+docker build -t nest-server-simulation .
+```
+
+Start a docker container
+```
+docker run -d -p 5000:5000 -t nest-server-simulation
+```
+
+Check if nest server simulation is running
+```
+curl localhost:5000
 ```
 
 ## FAQ

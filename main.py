@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import re
-import sys
+import os
+import optparse
 import nest
 import nest_apps.simple_network as simple
 
@@ -9,29 +9,24 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 
-def is_valid_ip(ip):
-    # https://stackoverflow.com/questions/319279/how-to-validate-ip-address-in-python
-    m = re.match(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", ip)
-    return bool(m) and all(map(lambda n: 0 <= int(n) <= 255, m.groups()))
-
 # --------------------------
 # General request
 # --------------------------
 
-
 @app.route('/', methods=['GET'])
 def index():
     response = {
-        'server': 'NEST',
+        'name': 'NEST server simulation',
         'version': nest.version().split(' ')[1],
-        'ref': 'http://www.github.com/babsey/nest-server-simulation'
+        'ref': 'http://www.github.com/babsey/nest-server-simulation',
+        'env': dict(filter(lambda item: 'NEST' in item[0], os.environ.items()))
     }
     return jsonify(response)
+
 
 # --------------------------
 # NEST simulation request
 # --------------------------
-
 
 def simulate(simulation, data):
     # print(data)
@@ -52,15 +47,12 @@ def simple_network_resume():
     return simulate(simple.resume, request.get_json())
 
 
-if __name__ == '__main__':
-    ip = '127.0.0.1'
-    port = 5000
-    if len(sys.argv) > 1:
-        host = sys.argv[1]
-        if ':' in host:
-            ip, port = host.split(':')
-        else:
-            ip = host
-    # print('%s:%s' %(ip,port))
-    assert is_valid_ip(ip)
-    app.run(host=ip, port=int(port))
+if __name__ == "__main__":
+    parser = optparse.OptionParser("usage: python main.py [options]")
+    parser.add_option("-H", "--host", dest="hostname",
+                      default="127.0.0.1", type="string",
+                      help="specify hostname to run on")
+    parser.add_option("-p", "--port", dest="port", default=5000,
+                      type="int", help="port to run on")
+    (options, args) = parser.parse_args()
+    app.run(host=options.hostname, port=options.port)

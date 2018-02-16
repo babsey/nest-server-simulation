@@ -10,12 +10,11 @@ def _paramify(params, param_defaults):
         elif isinstance(pval, dict):
             _params[pkey] = _paramify(pval, param_defaults[pkey])
         elif pkey in param_defaults:
-            ptype = type(param_defaults[pkey])
-            if ptype == np.ndarray:
+            if isinstance(param_defaults[pkey], np.ndarray):
                 _params[pkey] = np.array(
-                    pval, dtype=param_defaults[pkey].dtype)
+                pval, dtype=param_defaults[pkey].dtype)
             else:
-                _params[pkey] = ptype(pval)
+                _params[pkey] = type(param_defaults[pkey])(pval)
     return _params
 
 

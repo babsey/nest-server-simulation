@@ -4,4 +4,4 @@
 source /opt/nest/bin/nest_vars.sh
 
 # NEST simulation server
-python main.py 0.0.0.0
+python main.py -H 0.0.0.0 -p 5000

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import numpy as np
+import random
 import nest
 
 from .lib import paramify
@@ -10,11 +10,11 @@ def simulate(data):
 
     # print('Set kernel')
     nest.ResetKernel()
-    np.random.seed(int(data.get('random_seed', 0)))
+    random.seed(int(data.get('random_seed', 0)))
     local_num_threads = int(data['kernel'].get('local_num_threads', 1))
     nest.SetKernelStatus({
         'local_num_threads': local_num_threads,
-        'rng_seeds': np.random.randint(0, 1000, local_num_threads).tolist(),
+        'rng_seeds': [random.randint(0, 1000) for thread in range(local_num_threads)],
         'resolution': float(data['kernel'].get('resolution', 1.0)),
     })
 
