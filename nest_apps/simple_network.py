@@ -45,9 +45,12 @@ def simulate(data):
                     lambda rec: rec.name,
                     nest.GetStatus(recorded_neuron['ids'], 'recordables')[0]))
             recordables = sorted(list(set(recordables)))
-            node['params'].update({'record_from': recordables})
+            if node.has_key('params'):
+                node['params'].update({'record_from': recordables})
+            else:
+                node['params'] = {'record_from': recordables}
 
-        if len(node.get('params', {})) == 0:
+        if not node.has_key('params'):
             continue
         nest.SetStatus(node['ids'], params=paramify.simulate(node))
 
