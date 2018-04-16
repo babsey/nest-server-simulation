@@ -30,4 +30,5 @@ COPY ./ /nest-server-simulation
 WORKDIR /nest-server-simulation
 
 EXPOSE 5000
+RUN chmod 755 entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
