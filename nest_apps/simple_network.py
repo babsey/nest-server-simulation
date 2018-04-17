@@ -22,20 +22,21 @@ def simulate(data):
     nodes = data['nodes']
     links = data['links']
 
-    recorders = []
     # print('Create nodes')
+    recorders = []
     for idx, node in enumerate(nodes):
+        nodes[idx]['ids'] = []
         if node.get('disabled', False):
             continue
         if not node.get('model', False):
             continue
         nodes[idx]['ids'] = nest.Create(node['model'], int(node.get('n', 1)))
         if node['element_type'] == 'recorder':
-            recorders.append((idx, nodes[idx]['ids']))
+            recorders.append(idx)
 
     # print('Set parameters for nodes')
     for idx, node in enumerate(nodes):
-        if len(node.get('ids', [])) == 0:
+        if len(node['ids']) == 0:
             continue
         if node['model'] == 'multimeter':
             rec_links = filter(lambda link: link['target'] == idx, links)
@@ -84,11 +85,12 @@ def simulate(data):
     data['kernel']['time'] = nest.GetKernelStatus('time')
 
     # print('Get record data')
-    for idx, recorder in recorders:
-        events = nest.GetStatus(recorder, 'events')[0]
+    for idx in recorders:
+        recorderId = nodes[idx]['ids']
+        events = nest.GetStatus(recorderId, 'events')[0]
         nodes[idx]['events'] = dict(
             map(lambda X: (X[0], X[1].tolist()), events.items()))
-        nest.SetStatus(recorder, {'n_events': 0})
+        nest.SetStatus(recorderId, {'n_events': 0})
 
     return data
 
