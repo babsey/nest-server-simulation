@@ -33,6 +33,7 @@ def simulate(simulation, data):
     try:
         response = {'data': simulation(data)}
     except Exception as e:
+        print(str(e))
         response = {'error': str(e)}
     return jsonify(response)
 

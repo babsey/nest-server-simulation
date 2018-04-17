@@ -7,6 +7,7 @@ from .lib import paramify
 
 def simulate(data):
     print('Simulate %s' % data.get('id', None))
+    print(data)
 
     # print('Set kernel')
     nest.ResetKernel()

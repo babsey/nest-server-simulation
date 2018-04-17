@@ -20,10 +20,9 @@ def _paramify(params, param_defaults):
 
 
 def simulate(node):
-    if len(node['params']) == 0:
-        return
+    params = node.get('params', {})
     param_defaults = nest.GetDefaults(node['model'])
-    params = _paramify(node['params'], param_defaults)
+    params = _paramify(params, param_defaults)
     return params
 
 
